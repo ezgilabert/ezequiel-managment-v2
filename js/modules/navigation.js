@@ -2,6 +2,7 @@ export function initNavigation() {
   const nav = document.getElementById('nav');
   const navBurger = document.getElementById('navBurger');
   const navContainer = document.getElementById('navContainer');
+  const navOverlay = document.getElementById('navOverlay');
 
   if (nav) {
     const onScroll = () => nav.classList.toggle('is-stuck', window.scrollY > 16);
@@ -15,6 +16,7 @@ export function initNavigation() {
       navContainer.classList.remove('dropdown-open');
       navBurger.classList.remove('is-rotated');
       navBurger.setAttribute('aria-expanded', 'false');
+      if (navOverlay) navOverlay.classList.remove('is-active');
     };
 
     navBurger.addEventListener('click', (e) => { 
@@ -23,14 +25,22 @@ export function initNavigation() {
       navContainer.classList.toggle('dropdown-open', isActive);
       navBurger.classList.toggle('is-rotated', isActive);
       navBurger.setAttribute('aria-expanded', String(isActive));
+      
+      if (navOverlay) {
+        navOverlay.classList.toggle('is-active', isActive);
+      }
     });
 
     document.querySelectorAll('.nav-link').forEach(link => {
       link.addEventListener('click', closeDropdown);
     });
 
+    if (navOverlay) {
+      navOverlay.addEventListener('click', closeDropdown);
+    }
+
     document.addEventListener('click', (e) => {
-      if (!nav.contains(e.target)) closeDropdown();
+      if (!nav.contains(e.target) && e.target !== navOverlay) closeDropdown();
     });
 
     document.addEventListener('keydown', (e) => {
