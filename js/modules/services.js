@@ -96,7 +96,6 @@ export function initServices() {
     });
   };
 
-  // Disable snapping when the user prefers reduced motion
   const snapConfig = reduce ? false : {
     snapTo: (value) => allowSnap ? Math.round(value * (totalSlides - 1)) / (totalSlides - 1) : value,
     duration: { min: 0.2, max: 0.5 },
@@ -113,9 +112,12 @@ export function initServices() {
     mainTimeline = gsap.timeline({
       scrollTrigger: {
         trigger: ".services",
-        start: "center center",
+        start: "top top",
         end: "+=150%",
         pin: true,
+        pinSpacing: true,
+        anticipatePin: 1,
+        invalidateOnRefresh: true,
         scrub: 1,
         snap: snapConfig,
         onUpdate: (self) => updateUI(self.progress)
@@ -139,12 +141,10 @@ export function initServices() {
   mm.add("(max-width: 1024px)", () => {
     mainTimeline = gsap.timeline({
       scrollTrigger: {
-        trigger: ".services",
-        start: "center center",
-        end: "+=150%",
-        pin: true,
+        trigger: ".altrum-card",
+        start: "top 85%",
+        end: "bottom 15%",
         scrub: 1,
-        snap: snapConfig,
         onUpdate: (self) => updateUI(self.progress)
       }
     });

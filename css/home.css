@@ -17,7 +17,6 @@ html[data-theme="dark"] .nav-overlay { background: rgba(0, 0, 0, 0.65); }
   pointer-events: none; transition: padding .4s var(--ease);
 }
 
-/* Al hacer scroll solo reducimos el padding, sin fondo ni blur en toda la barra */
 .custom-nav.is-stuck {
   padding-block: 12px;
 }
@@ -74,7 +73,6 @@ html[data-theme="dark"] .custom-nav__container {
 }
 html[data-theme="dark"] .custom-nav__logo-img { filter: invert(1) brightness(1.5); }
 
-/* Layout-specific placement for theme toggle inside custom nav */
 .custom-nav .theme-toggle { margin-left: auto; margin-right: 8px; }
 
 /* ================= BURGER SPLIT HOVER & ACTIVE ================= */
@@ -216,9 +214,11 @@ html[data-theme="dark"] .hero__art{background:#1B1B1E}
 /* ================= SERVICES (ALTRUM CARD) ================= */
 .services {
   min-height: 100vh;
+  min-height: 100svh;
   display: flex;
   flex-direction: column;
   justify-content: center;
+  padding-block: clamp(60px, 8vw, 120px);
 }
 .services__head{text-align:center;max-width:760px;margin:0 auto clamp(48px, 6vw, 80px)}
 .services__head h2{margin-top:22px}
@@ -285,9 +285,19 @@ html[data-theme="dark"] .hero__art{background:#1B1B1E}
   overflow: hidden;
   width: 100%;
   max-width: 100%;
+  display: grid;
 }
 
-.altrum-text-slide { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: center; opacity: 0; z-index: 10; pointer-events: none; width: 100%; }
+.altrum-text-slide {
+  grid-area: 1 / 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  opacity: 0;
+  z-index: 10;
+  pointer-events: none;
+  width: 100%;
+}
 
 .altrum-title {
   font-size: clamp(1.8rem, 3.5vw, 2.8rem);
@@ -365,25 +375,44 @@ html[data-theme="dark"] .hero__art{background:#1B1B1E}
     width: 100% !important; max-width: 100% !important;
   }
   .altrum-img-container { height: 300px; }
-  .services { min-height: auto; padding-block: 80px; }
+  .services {
+    min-height: auto;
+    padding-block: 60px;
+    justify-content: flex-start;
+  }
   .contact-v4__grid { grid-template-columns: 1fr; align-items: flex-start; gap: 48px; }
 }
 
 @media (max-width: 768px) {
   .hero { padding-top: 120px; }
   .hero__title { font-size: clamp(2rem, 7vw, 2.6rem); line-height: 1.05; text-align: center; }
-  .hero__title-text { display: block; min-height: auto; margin-bottom: 16px; }
+  .hero__title-text { display: block; min-height: 4.5em; margin-bottom: 16px; }
   .hero__selector { justify-content: center; margin-top: 0; margin-bottom: 16px; }
   .hero__sub { margin-top: 0; font-size: 0.95rem; text-align: center; padding-inline: 10px; }
+
+  .hero__dot { position: relative; }
+  .hero__dot::before {
+    content: '';
+    position: absolute;
+    inset: -8px;
+    border-radius: 50%;
+  }
+
   .altrum-footer { flex-direction: column; gap: 16px; align-items: flex-start; }
   .altrum-btn { width: 100%; justify-content: center; }
   .altrum-dots { align-self: center; }
+  .dot-btn { position: relative; }
+  .dot-btn::before { content: ''; position: absolute; inset: -6px; border-radius: 50%; }
   .highlight-section { padding-top: 40px; padding-bottom: 60px; }
   .highlight-text { font-size: clamp(1.8rem, 6vw, 2.5rem); }
   .altrum-header { font-size: 1.25rem; }
+  .altrum-title { line-height: 1.06; margin-bottom: 0.85rem; }
+  .altrum-desc { font-size: 0.95rem; line-height: 1.55; }
 }
 
 @media (max-width: 480px) {
   .custom-nav__text { font-size: 9px; padding: 0 8px; }
   .custom-nav__container { padding: 10px 14px; }
+  .altrum-img-container { height: 240px; }
+  .altrum-content { padding: 1.5rem; }
 }
