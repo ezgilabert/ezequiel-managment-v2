@@ -12,10 +12,9 @@ export function initServices() {
   const totalSlides = imgSlides.length;
   const editions = ["@Service 01", "@Service 02", "@Service 03"];
 
-  let disableSnap = false;
-  let disableSnapTimeout;
+  let allowSnap = true;
+  let mainTimeline;
 
-  // Initial setup for slides
   imgSlides.forEach((slide, i) => {
     const inner = slide.querySelector('.reveal-item');
     gsap.set(slide, { opacity: i === 0 ? 1 : 0 });
@@ -28,9 +27,9 @@ export function initServices() {
     gsap.set(inner, { y: i === 0 ? '0%' : '100%' });
   });
 
-  // UI Update (numbers, dots, layers)
   const updateUI = (progress) => {
     const activeIdx = progress < 0.25 ? 0 : (progress < 0.75 ? 1 : 2);
+    
     if (currentNum) currentNum.textContent = '0' + (activeIdx + 1);
     if (editionLabel) editionLabel.textContent = editions[activeIdx];
     
@@ -48,53 +47,50 @@ export function initServices() {
     });
   };
 
-  // Slide transition logic
   const addTransitionsToTimeline = (tl) => {
-    tl.to([imgSlides[0].querySelector('.reveal-item'), textSlides[0].querySelector('.reveal-item')], { y: '-100%', duration: 1, ease: "power2.inOut" }, 0)
-      .to([imgSlides[1].querySelector('.reveal-item'), textSlides[1].querySelector('.reveal-item')], { y: '0%', duration: 1, ease: "power2.inOut" }, 0)
-      .to([imgSlides[0], textSlides[0]], { opacity: 0, duration: 1, ease: "power2.inOut" }, 0) // Ahora dura 1s
-      .to([imgSlides[1], textSlides[1]], { opacity: 1, duration: 1, ease: "power2.inOut" }, 0) // Ahora dura 1s
-      
-    // 1 -> 2
-      .to([imgSlides[1].querySelector('.reveal-item'), textSlides[1].querySelector('.reveal-item')], { y: '-100%', duration: 1, ease: "power2.inOut" }, 1)
-      .to([imgSlides[2].querySelector('.reveal-item'), textSlides[2].querySelector('.reveal-item')], { y: '0%', duration: 1, ease: "power2.inOut" }, 1)
-      .to([imgSlides[1], textSlides[1]], { opacity: 0, duration: 1, ease: "power2.inOut" }, 1)
-      .to([imgSlides[2], textSlides[2]], { opacity: 1, duration: 1, ease: "power2.inOut" }, 1);
+    const imgInners = Array.from(imgSlides).map(s => s.querySelector('.reveal-item'));
+    const textInners = Array.from(textSlides).map(s => s.querySelector('.reveal-item'));
+
+    // Transition 0 -> 1
+    tl.fromTo([imgInners[0], textInners[0]], 
+      { y: '0%' }, { y: '-100%', duration: 1, ease: "power2.inOut" }, 0)
+    .fromTo([imgInners[1], textInners[1]], 
+      { y: '100%' }, { y: '0%', duration: 1, ease: "power2.inOut" }, 0)
+    .fromTo([imgSlides[0], textSlides[0]], 
+      { opacity: 1 }, { opacity: 0, duration: 1, ease: "power2.inOut" }, 0)
+    .fromTo([imgSlides[1], textSlides[1]], 
+      { opacity: 0 }, { opacity: 1, duration: 1, ease: "power2.inOut" }, 0)
+    
+    // Transition 1 -> 2
+    .fromTo([imgInners[1], textInners[1]], 
+      { y: '0%' }, { y: '-100%', duration: 1, ease: "power2.inOut" }, 1)
+    .fromTo([imgInners[2], textInners[2]], 
+      { y: '100%' }, { y: '0%', duration: 1, ease: "power2.inOut" }, 1)
+    .fromTo([imgSlides[1], textSlides[1]], 
+      { opacity: 1 }, { opacity: 0, duration: 1, ease: "power2.inOut" }, 1)
+    .fromTo([imgSlides[2], textSlides[2]], 
+      { opacity: 0 }, { opacity: 1, duration: 1, ease: "power2.inOut" }, 1);
   };
 
-  // Snap inteligente
-  const smartSnap = {
-    snapTo: (progress) => {
-      if (disableSnap) return progress;
-      return Math.round(progress * 2) / 2;
-    },
-    duration: 0.4,
-    delay: 0.1
-  };
-
-  // Bottom dots navigation
-  const handleDotClick = (tl, dot) => {
-    let st = tl.scrollTrigger;
-    if (!st) { ScrollTrigger.refresh(); st = tl.scrollTrigger; }
-    if (!st) return;
+  const handleDotClick = (dot) => {
+    if (!mainTimeline || !mainTimeline.scrollTrigger) return;
     
     const idx = parseInt(dot.getAttribute('data-index'), 10);
     if (Number.isNaN(idx)) return;
     
-    disableSnap = true;
-    if (disableSnapTimeout) clearTimeout(disableSnapTimeout);
+    allowSnap = false;
     
     const progress = idx / (totalSlides - 1);
-    const scrollPos = st.start + (st.end - st.start) * progress;
+    const scrollPos = mainTimeline.scrollTrigger.start + 
+                     (mainTimeline.scrollTrigger.end - mainTimeline.scrollTrigger.start) * progress;
     
     gsap.to(window, {
       scrollTo: scrollPos,
-      duration: 0.6,
+      duration: 0.8,
       ease: "power2.inOut",
       overwrite: "auto",
-      onComplete: () => {
-        disableSnapTimeout = setTimeout(() => { disableSnap = false; }, 100);
-      }
+      onComplete: () => { allowSnap = true; },
+      onInterrupt: () => { allowSnap = true; }
     });
   };
 
@@ -104,22 +100,27 @@ export function initServices() {
   // DESKTOP
   // ==========================================
   mm.add("(min-width: 1025px)", () => {
-    const tl = gsap.timeline({
+    mainTimeline = gsap.timeline({
       scrollTrigger: {
         trigger: ".services",
         start: "center center",
         end: "+=200%",
         pin: true,
         scrub: 1,
-        snap: smartSnap,
+        snap: {
+          snapTo: (value) => allowSnap ? Math.round(value * (totalSlides - 1)) / (totalSlides - 1) : value,
+          duration: { min: 0.2, max: 0.5 },
+          delay: 0.1,
+          ease: "power1.inOut"
+        },
         onUpdate: (self) => updateUI(self.progress)
       }
     });
-    addTransitionsToTimeline(tl);
+    addTransitionsToTimeline(mainTimeline);
 
     const dotListeners = [];
     dotButtons.forEach(dot => {
-      const listener = () => handleDotClick(tl, dot);
+      const listener = () => handleDotClick(dot);
       dot.addEventListener('click', listener);
       dotListeners.push({ dot, listener });
     });
@@ -131,22 +132,27 @@ export function initServices() {
   // MOBILE & TABLET
   // ==========================================
   mm.add("(max-width: 1024px)", () => {
-    const tl = gsap.timeline({
+    mainTimeline = gsap.timeline({
       scrollTrigger: {
         trigger: ".services",
         start: "center center",
         end: "+=150%", 
         pin: true,
         scrub: 1,
-        snap: smartSnap,
+        snap: {
+          snapTo: (value) => allowSnap ? Math.round(value * (totalSlides - 1)) / (totalSlides - 1) : value,
+          duration: { min: 0.2, max: 0.5 },
+          delay: 0.1,
+          ease: "power1.inOut"
+        },
         onUpdate: (self) => updateUI(self.progress)
       }
     });
-    addTransitionsToTimeline(tl);
+    addTransitionsToTimeline(mainTimeline);
 
     const dotListeners = [];
     dotButtons.forEach(dot => {
-      const listener = () => handleDotClick(tl, dot);
+      const listener = () => handleDotClick(dot);
       dot.addEventListener('click', listener);
       dotListeners.push({ dot, listener });
     });

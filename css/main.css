@@ -391,9 +391,16 @@ html[data-theme="dark"] .nav-dropdown { background-color: #151517; }
 @media (min-width: 1024px) { .altrum-content { padding: 3.5rem; } }
 
 .altrum-header {
-  display: flex; align-items: center; justify-content: space-between; font-size: 0.75rem;
-  font-weight: 500; letter-spacing: 0.05em; text-transform: uppercase; color: var(--muted-2);
-  border-bottom: 1px solid var(--line); padding-bottom: 1.25rem;
+  display: flex; 
+  align-items: center; 
+  justify-content: space-between; 
+  font-size: 1.5rem; 
+  font-weight: 600; 
+  letter-spacing: -0.01em; 
+  text-transform: none;
+  color: var(--muted-2);
+  border-bottom: 1px solid var(--line); 
+  padding-bottom: 1.25rem;
 }
 .altrum-header span:first-child { display: flex; align-items: center; gap: 8px; color: var(--ink); }
 
@@ -611,6 +618,10 @@ html.is-theme-changing, html.is-theme-changing *, html.is-theme-changing *::befo
   }
   .highlight-text {
     font-size: clamp(1.8rem, 6vw, 2.5rem); 
+  }
+
+  .altrum-header {
+    font-size: 1.25rem;
   }
 }
 
