@@ -9,6 +9,8 @@
   z-index: 9999;
   color: var(--ink);
   transition: transform 0.8s cubic-bezier(0.76, 0, 0.24, 1), background-color 0.4s var(--ease);
+  padding-inline: 16px;
+  box-sizing: border-box;
 }
 
 .loader-screen.hidden {
@@ -19,10 +21,12 @@
 .loader-content {
   display: flex;
   align-items: center;
-  font-size: clamp(1.4rem, 5vw, 2rem); 
+  justify-content: center;
+  font-size: clamp(1.4rem, 5vw, 2rem);
   font-weight: 500;
   white-space: nowrap;
   gap: 0.6rem;
+  max-width: 100%;
 }
 
 .reveal-container {
@@ -47,8 +51,8 @@
   flex-shrink: 0;
 }
 
-.logo-loader path { 
-  fill: var(--ink); 
+.logo-loader path {
+  fill: var(--ink);
 }
 
 @keyframes zoomInZ {
@@ -56,43 +60,87 @@
   100% { transform: translateZ(0) scale(1); opacity: 1; filter: blur(0); }
 }
 
+/* Contenedor: se dimensiona exactamente al ancho de la palabra
+   más larga ("Construcción") gracias al ::before invisible.
+   Las palabras van alineadas a la izquierda, como un typing real. */
 .dynamic-container {
   position: relative;
   display: inline-block;
   height: 1.6em;
   overflow: hidden;
-  min-width: 14ch; 
+  vertical-align: middle;
 }
 
-.dynamic-wrapper {
+.dynamic-container::before {
+  content: "Construcción";
+  visibility: hidden;
   display: inline-block;
-  overflow: hidden;
   white-space: nowrap;
-  width: 0;
   line-height: 1.6;
-  animation: typing 0.8s steps(14, end) 1s forwards;
-  transition: transform 0.55s cubic-bezier(0.76, 0, 0.24, 1);
+  pointer-events: none;
 }
 
-.dynamic-word { 
-  color: var(--muted); 
-  display: inline-block; 
-}
-
-@keyframes typing { to { width: 100%; } }
-
+/* Ambas capas de palabras: ancladas arriba-izquierda */
+.dynamic-wrapper,
 .replacement-wrapper {
   position: absolute;
   top: 0;
   left: 0;
   white-space: nowrap;
-  color: var(--muted);
   line-height: 1.6;
+}
+
+/* Efecto typing para "Visión" */
+.dynamic-wrapper {
+  color: var(--muted);
+  clip-path: inset(0 100% 0 0);
+  animation: typingReveal 0.8s steps(14, end) 1s forwards;
+  transition: transform 0.55s cubic-bezier(0.76, 0, 0.24, 1);
+}
+
+.dynamic-word {
+  color: var(--muted);
+  display: inline-block;
+}
+
+@keyframes typingReveal {
+  from { clip-path: inset(0 100% 0 0); }
+  to   { clip-path: inset(0 0 0 0); }
+}
+
+.dynamic-wrapper.slide-out {
+  transform: translateY(-100%);
+}
+
+/* Palabras que reemplazan a la inicial */
+.replacement-wrapper {
+  color: var(--muted);
   transform: translateY(100%);
   transition: transform 0.55s cubic-bezier(0.76, 0, 0.24, 1), opacity 0.25s ease;
   opacity: 0;
 }
 
-.replacement-wrapper.active { transform: translateY(0); opacity: 1; }
-.replacement-wrapper.slide-out { transform: translateY(-100%); opacity: 0; }
-.dynamic-wrapper.slide-out { transform: translateY(-100%); }
+.replacement-wrapper.active {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+.replacement-wrapper.slide-out {
+  transform: translateY(-100%);
+  opacity: 0;
+}
+
+/* ================= MOBILE ================= */
+@media (max-width: 520px) {
+  .loader-content {
+    font-size: 1.2rem;
+    gap: 0.4rem;
+  }
+  .reveal-container,
+  .reveal-inner {
+    gap: 0.35rem;
+  }
+  .logo-loader {
+    width: 28px;
+  }
+}
