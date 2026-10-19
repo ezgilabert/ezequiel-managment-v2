@@ -2,30 +2,30 @@ export class RetroTv {
   constructor(canvasId) {
     this.canvas = document.getElementById(canvasId);
     if (!this.canvas) return;
-    
+
     this.ctx = this.canvas.getContext('2d');
     this.W = this.canvas.width;
     this.H = this.canvas.height;
-    
+
     this.retroTv = document.getElementById('retroTv');
     this.osdEl = document.getElementById('tvChannel');
     this.indEl = document.getElementById('tvIndicator');
     this.dialEl = document.getElementById('tvDial');
-    
+
     this.isTvVisible = false;
-    this.current = 0; 
-    this.changing = false; 
+    this.current = 0;
+    this.changing = false;
     this.lastSwitch = performance.now();
     this.reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     this.channelDuration = this.reduce ? 999999999 : 9000;
     this.lastFrame = 0;
 
     this.noiseCan = document.createElement('canvas');
-    this.noiseCan.width = 160; 
+    this.noiseCan.width = 160;
     this.noiseCan.height = 120;
     this.noiseCtx = this.noiseCan.getContext('2d');
     this.noiseFrames = [];
-    
+
     this.stars = [];
     this.mDrops = [];
     this.lastTimeStr = '';
@@ -34,7 +34,7 @@ export class RetroTv {
     this.initNoise();
     this.initStars();
     this.initMatrix();
-    
+
     this.channels = [
       { name: 'NO SIGNAL',  draw: this.drawStatic.bind(this)  },
       { name: 'COLOR BARS', draw: this.drawBars.bind(this)    },
@@ -56,8 +56,8 @@ export class RetroTv {
   }
 
   // --- Utilidades ---
-  hsl(h, s, l, a) { 
-    return (a == null) ? `hsl(${h},${s}%,${l}%)` : `hsla(${h},${s}%,${l}%,${a})`; 
+  hsl(h, s, l, a) {
+    return (a == null) ? `hsl(${h},${s}%,${l}%)` : `hsla(${h},${s}%,${l}%,${a})`;
   }
 
   initNoise() {
@@ -72,8 +72,8 @@ export class RetroTv {
   }
 
   initStars() {
-    for (let i = 0; i < 140; i++) { 
-      this.stars.push({ x: (Math.random() - 0.5) * 2, y: (Math.random() - 0.5) * 2, z: Math.random() }); 
+    for (let i = 0; i < 140; i++) {
+      this.stars.push({ x: (Math.random() - 0.5) * 2, y: (Math.random() - 0.5) * 2, z: Math.random() });
     }
   }
 
@@ -89,9 +89,9 @@ export class RetroTv {
     this.ctx.imageSmoothingEnabled = false;
     this.ctx.drawImage(this.noiseCan, 0, 0, this.W, this.H);
     this.ctx.imageSmoothingEnabled = true;
-    if (Math.random() < 0.08) { 
-      this.ctx.fillStyle = 'rgba(255,0,80,.22)'; 
-      this.ctx.fillRect(0, Math.random() * this.H, this.W, 2); 
+    if (Math.random() < 0.08) {
+      this.ctx.fillStyle = 'rgba(255,0,80,.22)';
+      this.ctx.fillRect(0, Math.random() * this.H, this.W, 2);
     }
   }
 
@@ -107,7 +107,7 @@ export class RetroTv {
     if (now - this.lastTimeUpdate > 500) { this.lastTimeStr = new Date().toLocaleTimeString(); this.lastTimeUpdate = now; }
     this.ctx.fillStyle = '#fff'; this.ctx.font = 'bold 10px monospace'; this.ctx.textAlign = 'center';
     this.ctx.fillText('EZE TV · ' + this.lastTimeStr, this.W / 2, this.H * 0.92);
-    this.ctx.fillStyle = this.hsl((t * 120) % 360, 100, 60); 
+    this.ctx.fillStyle = this.hsl((t * 120) % 360, 100, 60);
     this.ctx.beginPath(); this.ctx.arc(this.W / 2, this.H * 0.97, 2 + Math.sin(t * 6), 0, Math.PI * 2); this.ctx.fill();
     this.ctx.textAlign = 'left';
   }
@@ -258,7 +258,7 @@ export class RetroTv {
     this.updateOSD();
     if (this.retroTv) this.retroTv.classList.add('is-changing');
     if (this.dialEl) this.dialEl.style.transform = `rotate(${this.current * 30}deg)`;
-    
+
     setTimeout(() => {
       if (this.retroTv) this.retroTv.classList.remove('is-changing');
       this.changing = false; this.lastSwitch = performance.now();
@@ -270,11 +270,11 @@ export class RetroTv {
     if (this.reduce && now - this.lastFrame < 500) { requestAnimationFrame(this.loop.bind(this)); return; }
     this.lastFrame = now;
     this.ctx.fillStyle = '#000'; this.ctx.fillRect(0, 0, this.W, this.H);
-    
+
     try { this.channels[this.current].draw(now / 1000); } catch (e) {}
-    
-    if (!this.changing && !this.reduce && now - this.lastSwitch > this.channelDuration) { 
-      this.changeChannel(1); 
+
+    if (!this.changing && !this.reduce && now - this.lastSwitch > this.channelDuration) {
+      this.changeChannel(1);
     }
     requestAnimationFrame(this.loop.bind(this));
   }
@@ -291,12 +291,22 @@ export class RetroTv {
         }
       });
     }, { threshold: 0.1 });
-    
+
     if (this.retroTv) observer.observe(this.retroTv);
   }
 
   initDOMEvents() {
-    if (this.canvas) this.canvas.addEventListener('click', () => this.changeChannel(1));
+    if (this.canvas) {
+      this.canvas.setAttribute('tabindex', '0');
+      this.canvas.setAttribute('role', 'button');
+      this.canvas.addEventListener('click', () => this.changeChannel(1));
+      this.canvas.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          this.changeChannel(1);
+        }
+      });
+    }
     if (this.dialEl) {
       this.dialEl.addEventListener('click', () => this.changeChannel(1));
       this.dialEl.addEventListener('keydown', (e) => {

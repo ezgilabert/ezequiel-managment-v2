@@ -3,7 +3,8 @@ export function initHeroCarousel() {
   const selectorEl = document.getElementById('heroSelector');
   if (!textEl || !selectorEl) return;
 
-  // Phrases updated with Version 4 style (Instrument Serif + coral color)
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
   const titles = [
     "Todo lo que se puede soñar, se puede <span class='it it--coral'>lograr</span>",
     "Soñar no es lo mismo que hacerlo <span class='it it--coral'>realidad</span>",
@@ -12,27 +13,28 @@ export function initHeroCarousel() {
     "Hay potencial en todo. La diferencia está en hacerlo <span class='it it--coral'>crecer</span>"
   ];
 
-  // Ensure the first title is rendered with proper HTML formatting immediately on load
   textEl.innerHTML = titles[0];
 
   let currentIndex = 0;
   let intervalId;
   let isTransitioning = false;
 
-  // Dynamically create selector dots
   titles.forEach((_, i) => {
     const dot = document.createElement('button');
+    dot.type = 'button';
     dot.classList.add('hero__dot');
-    if (i === 0) dot.classList.add('is-active');
-    dot.setAttribute('aria-label', `View phrase ${i + 1}`);
-    
-    // On click, change phrase and reset timer
+    if (i === 0) {
+      dot.classList.add('is-active');
+      dot.setAttribute('aria-current', 'true');
+    }
+    dot.setAttribute('aria-label', `Ver frase ${i + 1}`);
+
     dot.addEventListener('click', () => {
       if (isTransitioning || currentIndex === i) return;
       changeTitle(i);
       resetInterval();
     });
-    
+
     selectorEl.appendChild(dot);
   });
 
@@ -40,36 +42,55 @@ export function initHeroCarousel() {
 
   const changeTitle = (newIndex) => {
     isTransitioning = true;
+
+    if (reduce) {
+      currentIndex = newIndex;
+      textEl.innerHTML = titles[currentIndex];
+      dots.forEach((d, i) => {
+        d.classList.toggle('is-active', i === currentIndex);
+        if (i === currentIndex) d.setAttribute('aria-current', 'true');
+        else d.removeAttribute('aria-current');
+      });
+      isTransitioning = false;
+      return;
+    }
+
     textEl.classList.add('fade-out');
-    
+
     setTimeout(() => {
       currentIndex = newIndex;
-      // Use innerHTML to render <span> tags and apply styles
-      textEl.innerHTML = titles[currentIndex]; 
-      
-      // Update dots
-      dots.forEach((d, i) => d.classList.toggle('is-active', i === currentIndex));
-      
-      // Entry animation
+      textEl.innerHTML = titles[currentIndex];
+
+      dots.forEach((d, i) => {
+        d.classList.toggle('is-active', i === currentIndex);
+        if (i === currentIndex) d.setAttribute('aria-current', 'true');
+        else d.removeAttribute('aria-current');
+      });
+
       textEl.classList.remove('fade-out');
       textEl.classList.add('fade-in');
-      
-      // Force reflow to trigger transition
+
       void textEl.offsetWidth;
-      
+
       textEl.classList.remove('fade-in');
       isTransitioning = false;
-    }, 500); // Synced with CSS transition duration
+    }, 500);
   };
 
   const resetInterval = () => {
     clearInterval(intervalId);
+    if (reduce) return;
     intervalId = setInterval(() => {
       const nextIndex = (currentIndex + 1) % titles.length;
       changeTitle(nextIndex);
-    }, 10000); // 10 seconds
+    }, 10000);
   };
 
-  // Start cycle
+  // Pause auto-advance on hover/focus for accessibility
+  selectorEl.addEventListener('mouseenter', () => clearInterval(intervalId));
+  selectorEl.addEventListener('mouseleave', resetInterval);
+  selectorEl.addEventListener('focusin', () => clearInterval(intervalId));
+  selectorEl.addEventListener('focusout', resetInterval);
+
   resetInterval();
 }

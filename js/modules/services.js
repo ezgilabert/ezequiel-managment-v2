@@ -4,6 +4,8 @@ export function initServices() {
 
   gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
 
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
   const imgSlides = altrumCard.querySelectorAll('.img-slide');
   const textSlides = altrumCard.querySelectorAll('.text-slide');
   const currentNum = altrumCard.querySelector('#current-num');
@@ -29,10 +31,10 @@ export function initServices() {
 
   const updateUI = (progress) => {
     const activeIdx = progress < 0.25 ? 0 : (progress < 0.75 ? 1 : 2);
-    
+
     if (currentNum) currentNum.textContent = '0' + (activeIdx + 1);
     if (editionLabel) editionLabel.textContent = editions[activeIdx];
-    
+
     dotButtons.forEach((dot, idx) => {
       dot.classList.toggle('is-active', idx === activeIdx);
     });
@@ -52,38 +54,38 @@ export function initServices() {
     const textInners = Array.from(textSlides).map(s => s.querySelector('.reveal-item'));
 
     // Transition 0 -> 1
-    tl.fromTo([imgInners[0], textInners[0]], 
+    tl.fromTo([imgInners[0], textInners[0]],
       { y: '0%' }, { y: '-100%', duration: 1, ease: "power2.inOut" }, 0)
-    .fromTo([imgInners[1], textInners[1]], 
+    .fromTo([imgInners[1], textInners[1]],
       { y: '100%' }, { y: '0%', duration: 1, ease: "power2.inOut" }, 0)
-    .fromTo([imgSlides[0], textSlides[0]], 
+    .fromTo([imgSlides[0], textSlides[0]],
       { opacity: 1 }, { opacity: 0, duration: 1, ease: "power2.inOut" }, 0)
-    .fromTo([imgSlides[1], textSlides[1]], 
+    .fromTo([imgSlides[1], textSlides[1]],
       { opacity: 0 }, { opacity: 1, duration: 1, ease: "power2.inOut" }, 0)
-    
+
     // Transition 1 -> 2
-    .fromTo([imgInners[1], textInners[1]], 
+    .fromTo([imgInners[1], textInners[1]],
       { y: '0%' }, { y: '-100%', duration: 1, ease: "power2.inOut" }, 1)
-    .fromTo([imgInners[2], textInners[2]], 
+    .fromTo([imgInners[2], textInners[2]],
       { y: '100%' }, { y: '0%', duration: 1, ease: "power2.inOut" }, 1)
-    .fromTo([imgSlides[1], textSlides[1]], 
+    .fromTo([imgSlides[1], textSlides[1]],
       { opacity: 1 }, { opacity: 0, duration: 1, ease: "power2.inOut" }, 1)
-    .fromTo([imgSlides[2], textSlides[2]], 
+    .fromTo([imgSlides[2], textSlides[2]],
       { opacity: 0 }, { opacity: 1, duration: 1, ease: "power2.inOut" }, 1);
   };
 
   const handleDotClick = (dot) => {
     if (!mainTimeline || !mainTimeline.scrollTrigger) return;
-    
+
     const idx = parseInt(dot.getAttribute('data-index'), 10);
     if (Number.isNaN(idx)) return;
-    
+
     allowSnap = false;
-    
+
     const progress = idx / (totalSlides - 1);
-    const scrollPos = mainTimeline.scrollTrigger.start + 
+    const scrollPos = mainTimeline.scrollTrigger.start +
                      (mainTimeline.scrollTrigger.end - mainTimeline.scrollTrigger.start) * progress;
-    
+
     gsap.to(window, {
       scrollTo: scrollPos,
       duration: 0.8,
@@ -92,6 +94,14 @@ export function initServices() {
       onComplete: () => { allowSnap = true; },
       onInterrupt: () => { allowSnap = true; }
     });
+  };
+
+  // Disable snapping when the user prefers reduced motion
+  const snapConfig = reduce ? false : {
+    snapTo: (value) => allowSnap ? Math.round(value * (totalSlides - 1)) / (totalSlides - 1) : value,
+    duration: { min: 0.2, max: 0.5 },
+    delay: 0.1,
+    ease: "power1.inOut"
   };
 
   const mm = gsap.matchMedia();
@@ -107,12 +117,7 @@ export function initServices() {
         end: "+=200%",
         pin: true,
         scrub: 1,
-        snap: {
-          snapTo: (value) => allowSnap ? Math.round(value * (totalSlides - 1)) / (totalSlides - 1) : value,
-          duration: { min: 0.2, max: 0.5 },
-          delay: 0.1,
-          ease: "power1.inOut"
-        },
+        snap: snapConfig,
         onUpdate: (self) => updateUI(self.progress)
       }
     });
@@ -136,15 +141,10 @@ export function initServices() {
       scrollTrigger: {
         trigger: ".services",
         start: "center center",
-        end: "+=150%", 
+        end: "+=150%",
         pin: true,
         scrub: 1,
-        snap: {
-          snapTo: (value) => allowSnap ? Math.round(value * (totalSlides - 1)) / (totalSlides - 1) : value,
-          duration: { min: 0.2, max: 0.5 },
-          delay: 0.1,
-          ease: "power1.inOut"
-        },
+        snap: snapConfig,
         onUpdate: (self) => updateUI(self.progress)
       }
     });

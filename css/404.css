@@ -42,12 +42,6 @@ html[data-theme="dark"] .error-nav__logo {
   filter: invert(1) brightness(1.5);
 }
 
-/* Sobrescribe el margin auto del theme-toggle global */
-.error-nav .theme-toggle {
-  margin-left: 0;
-  margin-right: 0;
-}
-
 /* ================= 404 — PAGE ================= */
 .error-page {
   min-height: 100vh;

@@ -1,0 +1,124 @@
+/* ================= TOKENS ================= */
+:root{
+  color-scheme:light;
+  --bg:#F6F5F1;
+  --surface:#FFFFFF;
+  --surface-2:#FBFAF7;
+  --ink:#0C0C0D;
+  --ink-soft:#1E1E20;
+  --muted:#6E6E73;
+  --muted-2:#9A9A9F;
+  --line:rgba(12,12,13,.08);
+  --line-2:rgba(12,12,13,.14);
+  --coral:#FF5A36;
+  --coral-soft:#FFE6DE;
+  --sans:'Inter Tight', ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --serif:'Instrument Serif', ui-serif, Georgia, serif;
+  --r-lg:32px;
+  --r-md:24px;
+  --r-sm:16px;
+  --pad:clamp(20px, 4.5vw, 60px);
+  --ease:cubic-bezier(.22,.75,.2,1);
+  --shadow-sm:0 1px 2px rgba(12,12,13,.04), 0 6px 18px -10px rgba(12,12,13,.08);
+  --shadow-md:0 2px 4px rgba(12,12,13,.03), 0 16px 40px -18px rgba(12,12,13,.14);
+  --shadow-lg:0 4px 8px rgba(12,12,13,.03), 0 30px 60px -24px rgba(12,12,13,.18);
+}
+
+html[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#0B0B0C;
+  --surface:#151517;
+  --surface-2:#101012;
+  --ink:#F5F4F0;
+  --ink-soft:#DFDED9;
+  --muted:#9B9BA1;
+  --muted-2:#6C6C72;
+  --line:rgba(255,255,255,.09);
+  --line-2:rgba(255,255,255,.16);
+  --coral-soft:#3A1A10;
+  --shadow-sm:0 1px 2px rgba(0,0,0,.55), 0 6px 18px -10px rgba(0,0,0,.7);
+  --shadow-md:0 2px 4px rgba(0,0,0,.45), 0 16px 40px -18px rgba(0,0,0,.85);
+  --shadow-lg:0 4px 8px rgba(0,0,0,.45), 0 30px 60px -24px rgba(0,0,0,.95);
+}
+
+/* ================= RESET ================= */
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--ink);
+  font-family:var(--sans);
+  font-size:16px;
+  line-height:1.5;
+  font-weight:400;
+  letter-spacing:-.011em;
+  overflow-x:hidden;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+}
+img{max-width:100%;display:block}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+ul{margin:0;padding:0;list-style:none}
+h1,h2,h3,h4,p{margin:0}
+::selection{background:var(--ink);color:var(--bg)}
+:focus-visible{outline:2px solid var(--ink);outline-offset:3px;border-radius:6px}
+
+/* ================= LAYOUT ================= */
+.wrap{width:min(100% - (var(--pad) * 2), 1320px);margin-inline:auto;max-width:100%;}
+.section{padding-block:clamp(80px, 11vw, 150px)}
+
+/* ================= HEADINGS ================= */
+.h-xl{font-size:clamp(2.6rem, 7.6vw, 6.4rem);line-height:.96;letter-spacing:-.045em;font-weight:700;}
+.h-lg{font-size:clamp(2.1rem, 5.4vw, 4.2rem);line-height:1.02;letter-spacing:-.04em;font-weight:700;}
+.it{
+  font-family:var(--serif);
+  font-style:italic;
+  font-weight:400;
+  letter-spacing:-.02em;
+  font-size: 1.15em;
+  line-height: 1;
+  display: inline-block;
+  vertical-align: baseline;
+}
+.it--coral{color:var(--coral)}
+
+/* ================= TEXT ================= */
+.body-lg{font-size:clamp(1.02rem, 1.35vw, 1.18rem);line-height:1.62;color:var(--muted);font-weight:400;letter-spacing:-.005em;}
+
+/* ================= THEME TOGGLE (shared visual) ================= */
+.theme-toggle {
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+.theme-toggle:hover { background-color: var(--line); transform: scale(1.1); }
+.theme-toggle .sun-icon { display: none; }
+.theme-toggle .moon-icon { display: block; }
+html[data-theme="dark"] .theme-toggle .sun-icon { display: block; }
+html[data-theme="dark"] .theme-toggle .moon-icon { display: none; }
+
+/* ================= REVEAL ================= */
+.reveal{opacity:0;transform:translateY(24px);transition:opacity .9s var(--ease), transform .9s var(--ease)}
+.reveal.in{opacity:1;transform:none}
+.reveal[data-d="1"]{transition-delay:.08s}
+.reveal[data-d="2"]{transition-delay:.16s}
+.reveal[data-d="3"]{transition-delay:.24s}
+
+/* ================= THEME TRANSITION ================= */
+html.is-theme-changing, html.is-theme-changing *, html.is-theme-changing *::before, html.is-theme-changing *::after {
+  transition: background-color .4s var(--ease), border-color .4s var(--ease), color .4s var(--ease), fill .4s var(--ease), stroke .4s var(--ease), box-shadow .4s var(--ease) !important;
+  transition-delay:0s !important;
+}
+
+/* ================= REDUCED MOTION (global) ================= */
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important;scroll-behavior:auto !important;}
+  .reveal{opacity:1;transform:none}
+}
