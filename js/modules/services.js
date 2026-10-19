@@ -50,16 +50,19 @@ export function initServices() {
 
   // Slide transition logic
   const addTransitionsToTimeline = (tl) => {
-    tl.to([imgSlides[0].querySelector('.reveal-item'), textSlides[0].querySelector('.reveal-item')], { y: '-100%', duration: 1, ease: "power2.inOut" })
-      .to([imgSlides[0], textSlides[0]], { opacity: 0, duration: 0.4, ease: "power2.inOut" }, "<")
-      .to([imgSlides[1].querySelector('.reveal-item'), textSlides[1].querySelector('.reveal-item')], { y: '0%', duration: 1, ease: "power2.inOut" }, "<")
-      .to([imgSlides[1], textSlides[1]], { opacity: 1, duration: 0.4, ease: "power2.inOut" }, "<")
-      .to([imgSlides[1].querySelector('.reveal-item'), textSlides[1].querySelector('.reveal-item')], { y: '-100%', duration: 1, ease: "power2.inOut" })
-      .to([imgSlides[1], textSlides[1]], { opacity: 0, duration: 0.4, ease: "power2.inOut" }, "<")
-      .to([imgSlides[2].querySelector('.reveal-item'), textSlides[2].querySelector('.reveal-item')], { y: '0%', duration: 1, ease: "power2.inOut" }, "<")
-      .to([imgSlides[2], textSlides[2]], { opacity: 1, duration: 0.4, ease: "power2.inOut" }, "<");
+    tl.to([imgSlides[0].querySelector('.reveal-item'), textSlides[0].querySelector('.reveal-item')], { y: '-100%', duration: 1, ease: "power2.inOut" }, 0)
+      .to([imgSlides[1].querySelector('.reveal-item'), textSlides[1].querySelector('.reveal-item')], { y: '0%', duration: 1, ease: "power2.inOut" }, 0)
+      .to([imgSlides[0], textSlides[0]], { opacity: 0, duration: 1, ease: "power2.inOut" }, 0) // Ahora dura 1s
+      .to([imgSlides[1], textSlides[1]], { opacity: 1, duration: 1, ease: "power2.inOut" }, 0) // Ahora dura 1s
+      
+    // 1 -> 2
+      .to([imgSlides[1].querySelector('.reveal-item'), textSlides[1].querySelector('.reveal-item')], { y: '-100%', duration: 1, ease: "power2.inOut" }, 1)
+      .to([imgSlides[2].querySelector('.reveal-item'), textSlides[2].querySelector('.reveal-item')], { y: '0%', duration: 1, ease: "power2.inOut" }, 1)
+      .to([imgSlides[1], textSlides[1]], { opacity: 0, duration: 1, ease: "power2.inOut" }, 1)
+      .to([imgSlides[2], textSlides[2]], { opacity: 1, duration: 1, ease: "power2.inOut" }, 1);
   };
 
+  // Snap inteligente
   const smartSnap = {
     snapTo: (progress) => {
       if (disableSnap) return progress;
