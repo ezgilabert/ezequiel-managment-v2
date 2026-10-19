@@ -61,7 +61,7 @@
   display: inline-block;
   height: 1.6em;
   overflow: hidden;
-  min-width: 8ch;
+  min-width: 14ch; 
 }
 
 .dynamic-wrapper {
@@ -70,7 +70,7 @@
   white-space: nowrap;
   width: 0;
   line-height: 1.6;
-  animation: typing 0.6s steps(10, end) 1s forwards;
+  animation: typing 0.8s steps(14, end) 1s forwards;
   transition: transform 0.55s cubic-bezier(0.76, 0, 0.24, 1);
 }
 
