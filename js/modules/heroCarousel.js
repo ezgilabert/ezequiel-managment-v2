@@ -12,6 +12,9 @@ export function initHeroCarousel() {
     "Hay potencial en todo. La diferencia está en hacerlo <span class='it it--coral'>crecer</span>"
   ];
 
+  // Ensure the first title is rendered with proper HTML formatting immediately on load
+  textEl.innerHTML = titles[0];
+
   let currentIndex = 0;
   let intervalId;
   let isTransitioning = false;
