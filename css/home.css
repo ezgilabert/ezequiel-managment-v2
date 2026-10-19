@@ -28,13 +28,19 @@ html[data-theme="dark"] .nav-overlay { background: rgba(0, 0, 0, 0.65); }
   border: 1px solid var(--line-2); border-radius: 16px; padding: 12px 18px;
   box-sizing: border-box; 
   box-shadow: var(--shadow-sm);
-  transition: background-color .4s var(--ease), border-color .4s var(--ease), border-radius .3s ease, box-shadow .4s var(--ease);
+  transition: background-color .4s var(--ease), border-color .4s var(--ease), border-radius .3s ease, box-shadow .4s var(--ease), backdrop-filter .4s var(--ease);
   position: relative;
 }
 
-/* Sombra un poco más pronunciada al hacer scroll para efecto de flotado */
 .custom-nav.is-stuck .custom-nav__container {
+  background-color: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(12px) saturate(140%);
+  -webkit-backdrop-filter: blur(12px) saturate(140%);
   box-shadow: var(--shadow-md);
+}
+
+html[data-theme="dark"] .custom-nav.is-stuck .custom-nav__container {
+  background-color: rgba(21, 21, 23, 0.75);
 }
 
 .custom-nav__container.dropdown-open {
