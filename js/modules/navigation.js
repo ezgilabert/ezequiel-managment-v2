@@ -3,6 +3,7 @@ export function initNavigation() {
   const navBurger = document.getElementById('navBurger');
   const navContainer = document.getElementById('navContainer');
   const navOverlay = document.getElementById('navOverlay');
+  const navLogo = document.getElementById('navLogo'); // Nuevo: Seleccionamos el logo
 
   if (nav) {
     const onScroll = () => nav.classList.toggle('is-stuck', window.scrollY > 16);
@@ -46,5 +47,18 @@ export function initNavigation() {
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') closeDropdown();
     });
+
+    if (navLogo) {
+      navLogo.addEventListener('click', (e) => {
+        e.preventDefault();
+        
+        window.scrollTo({
+          top: 0,
+          behavior: 'smooth'
+        });
+
+        closeDropdown();
+      });
+    }
   }
 }
