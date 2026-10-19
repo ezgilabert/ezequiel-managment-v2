@@ -4,6 +4,7 @@ import { initScrollAnimations } from './modules/scrollAnimations.js';
 import { initServices } from './modules/services.js';
 import { RetroTv } from './modules/retroTv.js';
 import { initHeroCarousel } from './modules/heroCarousel.js';
+import { initLoader } from './loader.js';
 
 /**
  * Initialize core UI elements as soon as the DOM is parsed.
@@ -14,13 +15,16 @@ function initImmediateUI() {
   const yearEl = document.getElementById('year');
   if (yearEl) yearEl.textContent = new Date().getFullYear();
 
-  // 2. Core UI Modules
+  // 2. Loader
+  initLoader();
+
+  // 3. Core UI Modules
   initTheme();
   initNavigation();
   initScrollAnimations();
   initHeroCarousel();
   
-  // 3. Retro TV Class
+  // 4. Retro TV Class
   new RetroTv('tvCanvas');
 }
 

@@ -30,7 +30,7 @@ export function initServices() {
   });
 
   const updateUI = (progress) => {
-    const activeIdx = progress < 0.25 ? 0 : (progress < 0.75 ? 1 : 2);
+    const activeIdx = progress < 0.5 ? 0 : (progress < 1 ? 1 : 2);
 
     if (currentNum) currentNum.textContent = '0' + (activeIdx + 1);
     if (editionLabel) editionLabel.textContent = editions[activeIdx];
@@ -114,7 +114,7 @@ export function initServices() {
       scrollTrigger: {
         trigger: ".services",
         start: "center center",
-        end: "+=200%",
+        end: "+=150%",
         pin: true,
         scrub: 1,
         snap: snapConfig,

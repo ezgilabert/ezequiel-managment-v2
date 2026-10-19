@@ -162,8 +162,13 @@
           </p>
         </div>
         <div class="hero__art reveal" data-d="2">
-          <img class="hero__photo" src="assets/dog.jpg" alt="Ezequiel with his dog in the snow"
-               width="800" height="880" loading="eager" fetchpriority="high" decoding="async" />
+          <img class="hero__photo" 
+               src="assets/dog.jpg" 
+               srcset="assets/dog.jpg 800w" 
+               sizes="(max-width: 768px) 100vw, 50vw"
+               alt="Ezequiel with his dog in the snow"
+               width="800" height="880" 
+               loading="eager" fetchpriority="high" decoding="async" />
         </div>
       </div>
     </section>
@@ -196,7 +201,11 @@
             <div class="retro-tv__cabinet">
               <div class="retro-tv__screen-wrap">
                 <div class="retro-tv__screen">
-                  <canvas id="tvCanvas" width="320" height="240" aria-label="Cambiar canal de la TV retro" role="button" tabindex="0"></canvas>
+                  <canvas id="tvCanvas" width="320" height="240" 
+                    aria-label="Televisión retro interactiva. Usa Enter o Espacio para cambiar de canal." 
+                    role="button" tabindex="0">
+                    Tu navegador no soporta canvas. Esta es una TV retro decorativa.
+                  </canvas>
                   <div class="retro-tv__scanlines" aria-hidden="true"></div>
                   <div class="retro-tv__glass" aria-hidden="true"></div>
                   <div class="retro-tv__static" aria-hidden="true"></div>
@@ -264,19 +273,19 @@
           <div class="altrum-text-container">
             <div class="text-slide altrum-text-slide" data-index="0">
               <div class="reveal-mask"><div class="reveal-item">
-                <h2 class="altrum-title">Gestión de Talento & Creadores</h2>
+                <h3 class="altrum-title">Gestión de Talento & Creadores</h3>
                 <p class="altrum-desc">Representación y gestión del día a día para creadores, streamers, talento y marcas que quieren construir algo que dure más que una tendencia.</p>
               </div></div>
             </div>
             <div class="text-slide altrum-text-slide" data-index="1">
               <div class="reveal-mask"><div class="reveal-item">
-                <h2 class="altrum-title">Contenido & Estrategia Creativa</h2>
+                <h3 class="altrum-title">Contenido & Estrategia Creativa</h3>
                 <p class="altrum-desc">Transformar ideas vagas en una dirección creativa sólida y un plan de acción claro: definir qué decir, cómo decirlo, en qué formatos comunicar y hacia dónde proyectar el crecimiento del contenido.</p>
               </div></div>
             </div>
             <div class="text-slide altrum-text-slide" data-index="2">
               <div class="reveal-mask"><div class="reveal-item">
-                <h2 class="altrum-title">Partnerships & Desarrollo de Negocios</h2>
+                <h3 class="altrum-title">Partnerships & Desarrollo de Negocios</h3>
                 <p class="altrum-desc">Encontrar la oportunidad que todavía no está sobre la mesa — y desplegar todo lo necesario para que realmente suceda.</p>
               </div></div>
             </div>
@@ -318,7 +327,6 @@
     </div>
   </footer>
 
-  <script src="js/loader.js"></script>
   <script type="module" src="js/main.js"></script>
 </body>
 </html>

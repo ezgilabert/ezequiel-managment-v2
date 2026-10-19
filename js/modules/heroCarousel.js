@@ -92,5 +92,14 @@ export function initHeroCarousel() {
   selectorEl.addEventListener('focusin', () => clearInterval(intervalId));
   selectorEl.addEventListener('focusout', resetInterval);
 
+  // Pause auto-advance when the tab is not visible
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) {
+      clearInterval(intervalId);
+    } else {
+      resetInterval();
+    }
+  });
+
   resetInterval();
 }
