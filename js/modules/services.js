@@ -16,22 +16,11 @@ export function initServices() {
 
   let allowSnap = true;
   let mainTimeline;
+  
+  let mobileCurrentIndex = 0;
+  let mobileAutoplay;
 
-  imgSlides.forEach((slide, i) => {
-    const inner = slide.querySelector('.reveal-item');
-    gsap.set(slide, { opacity: i === 0 ? 1 : 0 });
-    gsap.set(inner, { y: i === 0 ? '0%' : '100%' });
-  });
-
-  textSlides.forEach((slide, i) => {
-    const inner = slide.querySelector('.reveal-item');
-    gsap.set(slide, { opacity: i === 0 ? 1 : 0 });
-    gsap.set(inner, { y: i === 0 ? '0%' : '100%' });
-  });
-
-  const updateUI = (progress) => {
-    const activeIdx = progress < 0.5 ? 0 : (progress < 1 ? 1 : 2);
-
+  const updateUI = (activeIdx) => {
     if (currentNum) currentNum.textContent = '0' + (activeIdx + 1);
     if (editionLabel) editionLabel.textContent = editions[activeIdx];
 
@@ -54,46 +43,92 @@ export function initServices() {
     const textInners = Array.from(textSlides).map(s => s.querySelector('.reveal-item'));
 
     // Transition 0 -> 1
-    tl.fromTo([imgInners[0], textInners[0]],
-      { y: '0%' }, { y: '-100%', duration: 1, ease: "power2.inOut" }, 0)
-    .fromTo([imgInners[1], textInners[1]],
-      { y: '100%' }, { y: '0%', duration: 1, ease: "power2.inOut" }, 0)
-    .fromTo([imgSlides[0], textSlides[0]],
-      { opacity: 1 }, { opacity: 0, duration: 1, ease: "power2.inOut" }, 0)
-    .fromTo([imgSlides[1], textSlides[1]],
-      { opacity: 0 }, { opacity: 1, duration: 1, ease: "power2.inOut" }, 0)
-
+    tl.fromTo([imgInners[0], textInners[0]], { y: '0%' }, { y: '-100%', duration: 1, ease: "power2.inOut" }, 0)
+      .fromTo([imgInners[1], textInners[1]], { y: '100%' }, { y: '0%', duration: 1, ease: "power2.inOut" }, 0)
+      .fromTo([imgSlides[0], textSlides[0]], { opacity: 1 }, { opacity: 0, duration: 1, ease: "power2.inOut" }, 0)
+      .fromTo([imgSlides[1], textSlides[1]], { opacity: 0 }, { opacity: 1, duration: 1, ease: "power2.inOut" }, 0)
     // Transition 1 -> 2
-    .fromTo([imgInners[1], textInners[1]],
-      { y: '0%' }, { y: '-100%', duration: 1, ease: "power2.inOut" }, 1)
-    .fromTo([imgInners[2], textInners[2]],
-      { y: '100%' }, { y: '0%', duration: 1, ease: "power2.inOut" }, 1)
-    .fromTo([imgSlides[1], textSlides[1]],
-      { opacity: 1 }, { opacity: 0, duration: 1, ease: "power2.inOut" }, 1)
-    .fromTo([imgSlides[2], textSlides[2]],
-      { opacity: 0 }, { opacity: 1, duration: 1, ease: "power2.inOut" }, 1);
+      .fromTo([imgInners[1], textInners[1]], { y: '0%' }, { y: '-100%', duration: 1, ease: "power2.inOut" }, 1)
+      .fromTo([imgInners[2], textInners[2]], { y: '100%' }, { y: '0%', duration: 1, ease: "power2.inOut" }, 1)
+      .fromTo([imgSlides[1], textSlides[1]], { opacity: 1 }, { opacity: 0, duration: 1, ease: "power2.inOut" }, 1)
+      .fromTo([imgSlides[2], textSlides[2]], { opacity: 0 }, { opacity: 1, duration: 1, ease: "power2.inOut" }, 1);
+  };
+
+  const goToMobileSlide = (index) => {
+    if (index === mobileCurrentIndex || index < 0 || index >= totalSlides) return;
+
+    const currentImg = imgSlides[mobileCurrentIndex];
+    const currentText = textSlides[mobileCurrentIndex];
+    const nextImg = imgSlides[index];
+    const nextText = textSlides[index];
+
+    const currentImgInner = currentImg.querySelector('.reveal-item');
+    const currentTextInner = currentText.querySelector('.reveal-item');
+    const nextImgInner = nextImg.querySelector('.reveal-item');
+    const nextTextInner = nextText.querySelector('.reveal-item');
+
+    const goingForward = index > mobileCurrentIndex;
+    const outY = goingForward ? '-100%' : '100%';
+    const inY = goingForward ? '100%' : '-100%';
+
+    gsap.set([nextImg, nextText], { opacity: 1, zIndex: 20 });
+    gsap.set([nextImgInner, nextTextInner], { y: inY });
+
+    gsap.to([currentImgInner, currentTextInner], {
+      y: outY,
+      duration: 0.6,
+      ease: "power2.inOut",
+      onComplete: () => {
+        gsap.set([currentImg, currentText], { opacity: 0, zIndex: 10 });
+      }
+    });
+
+    gsap.to([nextImgInner, nextTextInner], {
+      y: '0%',
+      duration: 0.6,
+      ease: "power2.inOut"
+    });
+
+    mobileCurrentIndex = index;
+    updateUI(mobileCurrentIndex);
+  };
+
+  const startMobileAutoplay = () => {
+    if (reduce) return;
+    stopMobileAutoplay();
+    mobileAutoplay = setInterval(() => {
+      const nextIndex = (mobileCurrentIndex + 1) % totalSlides;
+      goToMobileSlide(nextIndex);
+    }, 5000);
+  };
+
+  const stopMobileAutoplay = () => {
+    clearInterval(mobileAutoplay);
   };
 
   const handleDotClick = (dot) => {
-    if (!mainTimeline || !mainTimeline.scrollTrigger) return;
-
     const idx = parseInt(dot.getAttribute('data-index'), 10);
     if (Number.isNaN(idx)) return;
 
-    allowSnap = false;
+    if (window.innerWidth > 1024 && mainTimeline && mainTimeline.scrollTrigger) {
+      allowSnap = false;
+      const progress = idx / (totalSlides - 1);
+      const scrollPos = mainTimeline.scrollTrigger.start +
+                       (mainTimeline.scrollTrigger.end - mainTimeline.scrollTrigger.start) * progress;
 
-    const progress = idx / (totalSlides - 1);
-    const scrollPos = mainTimeline.scrollTrigger.start +
-                     (mainTimeline.scrollTrigger.end - mainTimeline.scrollTrigger.start) * progress;
-
-    gsap.to(window, {
-      scrollTo: scrollPos,
-      duration: 0.8,
-      ease: "power2.inOut",
-      overwrite: "auto",
-      onComplete: () => { allowSnap = true; },
-      onInterrupt: () => { allowSnap = true; }
-    });
+      gsap.to(window, {
+        scrollTo: scrollPos,
+        duration: 0.8,
+        ease: "power2.inOut",
+        overwrite: "auto",
+        onComplete: () => { allowSnap = true; },
+        onInterrupt: () => { allowSnap = true; }
+      });
+    } else {
+      goToMobileSlide(idx);
+      stopMobileAutoplay();
+      startMobileAutoplay();
+    }
   };
 
   const snapConfig = reduce ? false : {
@@ -120,35 +155,41 @@ export function initServices() {
         invalidateOnRefresh: true,
         scrub: 1,
         snap: snapConfig,
-        onUpdate: (self) => updateUI(self.progress)
+        onUpdate: (self) => {
+          const activeIdx = self.progress < 0.5 ? 0 : (self.progress < 1 ? 1 : 2);
+          updateUI(activeIdx);
+        }
       }
     });
     addTransitionsToTimeline(mainTimeline);
-
-    const dotListeners = [];
-    dotButtons.forEach(dot => {
-      const listener = () => handleDotClick(dot);
-      dot.addEventListener('click', listener);
-      dotListeners.push({ dot, listener });
+    
+    imgSlides.forEach((slide, i) => {
+      gsap.set(slide, { opacity: i === 0 ? 1 : 0 });
+      gsap.set(slide.querySelector('.reveal-item'), { y: i === 0 ? '0%' : '100%' });
     });
+    textSlides.forEach((slide, i) => {
+      gsap.set(slide, { opacity: i === 0 ? 1 : 0 });
+      gsap.set(slide.querySelector('.reveal-item'), { y: i === 0 ? '0%' : '100%' });
+    });
+    updateUI(0);
 
-    return () => dotListeners.forEach(item => item.dot.removeEventListener('click', item.listener));
+    return () => stopMobileAutoplay();
   });
 
   // ==========================================
   // MOBILE & TABLET
   // ==========================================
   mm.add("(max-width: 1024px)", () => {
-    mainTimeline = gsap.timeline({
-      scrollTrigger: {
-        trigger: ".altrum-card",
-        start: "top 85%",
-        end: "bottom 15%",
-        scrub: 1,
-        onUpdate: (self) => updateUI(self.progress)
-      }
+    mobileCurrentIndex = 0;
+    imgSlides.forEach((slide, i) => {
+      gsap.set(slide, { opacity: i === 0 ? 1 : 0, zIndex: i === 0 ? 20 : 10 });
+      gsap.set(slide.querySelector('.reveal-item'), { y: i === 0 ? '0%' : '100%' });
     });
-    addTransitionsToTimeline(mainTimeline);
+    textSlides.forEach((slide, i) => {
+      gsap.set(slide, { opacity: i === 0 ? 1 : 0, zIndex: i === 0 ? 20 : 10 });
+      gsap.set(slide.querySelector('.reveal-item'), { y: i === 0 ? '0%' : '100%' });
+    });
+    updateUI(0);
 
     const dotListeners = [];
     dotButtons.forEach(dot => {
@@ -157,6 +198,11 @@ export function initServices() {
       dotListeners.push({ dot, listener });
     });
 
-    return () => dotListeners.forEach(item => item.dot.removeEventListener('click', item.listener));
+    startMobileAutoplay();
+
+    return () => {
+      dotListeners.forEach(item => item.dot.removeEventListener('click', item.listener));
+      stopMobileAutoplay();
+    };
   });
 }

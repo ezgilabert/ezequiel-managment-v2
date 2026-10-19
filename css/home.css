@@ -32,14 +32,14 @@ html[data-theme="dark"] .nav-overlay { background: rgba(0, 0, 0, 0.65); }
 }
 
 .custom-nav.is-stuck .custom-nav__container {
-  background-color: rgba(255, 255, 255, 0.75);
-  backdrop-filter: blur(12px) saturate(140%);
-  -webkit-backdrop-filter: blur(12px) saturate(140%);
+  background-color: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(8px) saturate(140%);
+  -webkit-backdrop-filter: blur(8px) saturate(140%);
   box-shadow: var(--shadow-md);
 }
 
 html[data-theme="dark"] .custom-nav.is-stuck .custom-nav__container {
-  background-color: rgba(21, 21, 23, 0.75);
+  background-color: rgba(21, 21, 23, 0.15);
 }
 
 .custom-nav__container.dropdown-open {
