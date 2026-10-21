@@ -2,27 +2,24 @@ export function initServices() {
   const altrumCard = document.querySelector('#altrumCard');
   if (!altrumCard || typeof gsap === 'undefined') return;
 
-  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
   const imgSlides = altrumCard.querySelectorAll('.img-slide');
   const textSlides = altrumCard.querySelectorAll('.text-slide');
   const editionLabel = altrumCard.querySelector('#edition-label');
   const dotButtons = altrumCard.querySelectorAll('.dot-btn');
   const prevBtn = altrumCard.querySelector('#prevBtn');
   const nextBtn = altrumCard.querySelector('#nextBtn');
-  
+
   const totalSlides = imgSlides.length;
-  
   const editions = ["01 / ÁREA", "02 / ÁREA", "03 / ÁREA"];
 
   let currentIndex = 0;
   let isAnimating = false;
-  let autoplayInterval;
 
   imgSlides.forEach((slide, i) => {
     gsap.set(slide, { opacity: i === 0 ? 1 : 0, zIndex: i === 0 ? 20 : 10 });
     gsap.set(slide.querySelector('.reveal-item'), { y: i === 0 ? '0%' : '100%' });
   });
+
   textSlides.forEach((slide, i) => {
     gsap.set(slide, { opacity: i === 0 ? 1 : 0, zIndex: i === 0 ? 20 : 10 });
     gsap.set(slide.querySelector('.reveal-item'), { y: i === 0 ? '0%' : '100%' });
@@ -41,7 +38,7 @@ export function initServices() {
 
   const goToSlide = (index) => {
     if (index === currentIndex || isAnimating || index < 0 || index >= totalSlides) return;
-    
+
     isAnimating = true;
     updateUI(index);
 
@@ -86,7 +83,6 @@ export function initServices() {
     prevBtn.addEventListener('click', () => {
       const target = (currentIndex - 1 + totalSlides) % totalSlides;
       goToSlide(target);
-      resetAutoplay();
     });
   }
 
@@ -94,7 +90,6 @@ export function initServices() {
     nextBtn.addEventListener('click', () => {
       const target = (currentIndex + 1) % totalSlides;
       goToSlide(target);
-      resetAutoplay();
     });
   }
 
@@ -103,28 +98,9 @@ export function initServices() {
       const idx = parseInt(dot.getAttribute('data-index'), 10);
       if (!Number.isNaN(idx)) {
         goToSlide(idx);
-        resetAutoplay();
       }
     });
   });
 
-  // Autoplay
-  const startAutoplay = () => {
-    if (reduce) return;
-    autoplayInterval = setInterval(() => {
-      const nextIdx = (currentIndex + 1) % totalSlides;
-      goToSlide(nextIdx);
-    }, 5000);
-  };
-
-  const resetAutoplay = () => {
-    clearInterval(autoplayInterval);
-    startAutoplay();
-  };
-
-  altrumCard.addEventListener('mouseenter', () => clearInterval(autoplayInterval));
-  altrumCard.addEventListener('mouseleave', startAutoplay);
-
   updateUI(0);
-  startAutoplay();
 }
