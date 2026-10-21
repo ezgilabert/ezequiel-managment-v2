@@ -19,29 +19,6 @@ export function initHeroCarousel() {
   let intervalId;
   let isTransitioning = false;
 
-  /* --- Anti layout-shift */
-  const measureAndApplyMinHeight = () => {
-    const originalHTML = textEl.innerHTML;
-    let maxH = 0;
-    titles.forEach((title) => {
-      textEl.innerHTML = title;
-      const h = textEl.offsetHeight;
-      if (h > maxH) maxH = h;
-    });
-    textEl.innerHTML = originalHTML;
-    if (maxH > 0) textEl.style.minHeight = maxH + 'px';
-  };
-
-  requestAnimationFrame(measureAndApplyMinHeight);
-  if (document.fonts && document.fonts.ready) {
-    document.fonts.ready.then(measureAndApplyMinHeight);
-  }
-  let resizeTimeout;
-  window.addEventListener('resize', () => {
-    clearTimeout(resizeTimeout);
-    resizeTimeout = setTimeout(measureAndApplyMinHeight, 150);
-  }, { passive: true });
-
   titles.forEach((_, i) => {
     const dot = document.createElement('button');
     dot.type = 'button';
