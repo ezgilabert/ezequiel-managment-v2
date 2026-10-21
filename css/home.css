@@ -53,10 +53,6 @@ html[data-theme="dark"] .custom-nav__container {
   border-color: var(--line-2); 
 }
 
-.custom-nav__text {
-  color: var(--ink); font-size: 11px; font-weight: 700; letter-spacing: 0.1em;
-  text-transform: uppercase; text-align: center; flex-grow: 1; padding: 0 16px;
-}
 .custom-nav__icon {
   display: flex; align-items: center; justify-content: center; color: var(--ink);
   text-decoration: none; opacity: 0.85; transition: opacity 0.2s ease, transform 0.3s ease; padding: 4px;
@@ -171,12 +167,38 @@ html[data-theme="dark"] .hero__art{background:#1B1B1E}
 .highlight-char { color: var(--line-2); transition: color 0.1s linear; }
 
 /* ================= ABOUT ================= */
-.about__grid{display:grid;grid-template-columns:1fr 1.05fr;gap:clamp(40px, 6vw, 100px);align-items:center;}
-.about__copy{max-width:560px}
-.about__copy h2{margin-top:22px}
-.about__copy .body-lg{margin-top:26px}
-.about__copy .body-lg + .body-lg{margin-top:18px}
-.about__art{position:relative;min-height:auto;padding:12px 0 24px;display:flex;align-items:center;justify-content:center;}
+.about__grid{
+  display: flex;
+  flex-direction: column;
+  gap: clamp(40px, 8vw, 80px);
+}
+
+.about__copy{
+  max-width: 850px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.about__copy h2 {
+  margin-top: 22px;
+}
+
+.about__copy .body-lg {
+  max-width: 700px;
+  margin-inline: auto;
+  margin-top: 26px;
+}
+
+.about__copy .body-lg + .body-lg {
+  margin-top: 18px;
+}
+
+.about__art{
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding: 12px 0 24px;
+}
 
 .retro-tv{position:relative;z-index:2;width:min(100%, 640px);margin:0 auto;padding-bottom:0;}
 .retro-tv__cabinet{
@@ -211,13 +233,8 @@ html[data-theme="dark"] .hero__art{background:#1B1B1E}
 .retro-tv__legs span:nth-child(1){transform:rotate(-7deg)}
 .retro-tv__legs span:nth-child(2){transform:rotate(7deg)}
 
-/* ================= SERVICES (ALTRUM CARD) ================= */
+/* ================= SERVICES ================= */
 .services {
-  min-height: 100vh;
-  min-height: 100svh;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
   padding-block: clamp(60px, 8vw, 120px);
 }
 .services__head{text-align:center;max-width:760px;margin:0 auto clamp(48px, 6vw, 80px)}
@@ -252,7 +269,20 @@ html[data-theme="dark"] .hero__art{background:#1B1B1E}
   gap: 10px; background: rgba(0,0,0,0.4); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
   padding: 8px 16px; border-radius: 999px; border: 1px solid rgba(255,255,255,0.1); color: #fff;
 }
-.altrum-counter span { font-size: 0.75rem; font-weight: 700; }
+.altrum-counter .counter-btn {
+  font-family: inherit;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #fff;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition: opacity 0.3s ease;
+}
+.altrum-counter .counter-btn:hover {
+  opacity: 0.7;
+}
 .altrum-counter .line-sep { width: 24px; height: 1px; background: rgba(255,255,255,0.3); }
 
 .altrum-content {
@@ -360,25 +390,22 @@ html[data-theme="dark"] .hero__art{background:#1B1B1E}
 
 /* ================= RESPONSIVE ================= */
 @media (max-width: 1024px) {
-  .hero__grid, .about__grid {
+  .hero__grid {
     grid-template-columns: 1fr;
     gap: 32px;
   }
-  .hero__copy, .about__copy { max-width: 100%; }
+  .hero__copy { max-width: 100%; }
   .hero__art {
     width: 100%; max-width: 520px; margin: 0 auto;
     aspect-ratio: 4/4.5; border-radius: var(--r-md);
   }
-  .about__art { margin-top: 20px; }
   .altrum-card {
     grid-template-columns: 1fr; min-height: auto;
     width: 100% !important; max-width: 100% !important;
   }
   .altrum-img-container { height: 300px; }
   .services {
-    min-height: auto;
     padding-block: 60px;
-    justify-content: flex-start;
   }
   .contact-v4__grid { grid-template-columns: 1fr; align-items: flex-start; gap: 48px; }
 }
@@ -398,6 +425,13 @@ html[data-theme="dark"] .hero__art{background:#1B1B1E}
     border-radius: 50%;
   }
 
+  .about__copy {
+    text-align: left;
+  }
+  .about__copy .body-lg {
+    margin-inline: 0;
+  }
+
   .altrum-footer { flex-direction: column; gap: 16px; align-items: flex-start; }
   .altrum-btn { width: 100%; justify-content: center; }
   .altrum-dots { align-self: center; }
@@ -408,10 +442,12 @@ html[data-theme="dark"] .hero__art{background:#1B1B1E}
   .altrum-header { font-size: 1.25rem; }
   .altrum-title { line-height: 1.06; margin-bottom: 0.85rem; }
   .altrum-desc { font-size: 0.95rem; line-height: 1.55; }
+  
+  .altrum-counter { bottom: 16px; left: 16px; padding: 6px 12px; gap: 6px; }
+  .altrum-counter .line-sep { width: 12px; }
 }
 
 @media (max-width: 480px) {
-  .custom-nav__text { font-size: 9px; padding: 0 8px; }
   .custom-nav__container { padding: 10px 14px; }
   .altrum-img-container { height: 240px; }
   .altrum-content { padding: 1.5rem; }
